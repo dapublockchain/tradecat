@@ -102,7 +102,7 @@ from telegram.error import Conflict, NetworkError, BadRequest, Forbidden
 from telegram.helpers import escape_markdown
 
 # ================== 本地 .env 加载 ==================
-ENV_FILE = PROJECT_ROOT / "config" / ".env"
+ENV_FILE = REPO_ROOT / "config" / ".env"
 
 
 def _load_env_file(env_path: Path) -> None:

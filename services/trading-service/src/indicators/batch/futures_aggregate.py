@@ -10,7 +10,7 @@ from ..base import Indicator, IndicatorMeta, register
 def _f(v) -> Optional[float]:
     if v is None: return None
     try: return float(v)
-    except: return None
+    except (ValueError, TypeError): return None
 
 
 def _linreg_slope(values: List[float]) -> Optional[float]:

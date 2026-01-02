@@ -12,7 +12,7 @@ SERVICE_ROOT = Path(__file__).parent.parent  # src/config.py -> data-service
 PROJECT_ROOT = SERVICE_ROOT.parent.parent    # tradecat/
 
 # 加载 config/.env
-_env_file = SERVICE_ROOT / "config" / ".env"
+_env_file = PROJECT_ROOT / "config" / ".env"
 if _env_file.exists():
     for line in _env_file.read_text().splitlines():
         line = line.strip()
