@@ -14,6 +14,13 @@ DAEMON_LOG="$LOG_DIR/daemon.log"
 CHECK_INTERVAL="${CHECK_INTERVAL:-30}"
 STOP_TIMEOUT=10
 
+# 加载环境变量
+if [ -f "$SERVICE_DIR/config/.env" ]; then
+    set -a
+    source "$SERVICE_DIR/config/.env"
+    set +a
+fi
+
 # 服务组件
 COMPONENTS=(backfill metrics ws)
 

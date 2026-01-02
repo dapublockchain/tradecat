@@ -1,9 +1,0 @@
-*.log
-*.out
-*.pyc
-__pycache__/
-data/*.db*
-data/*.json
-data/backups/
-data/cache/
-logs/

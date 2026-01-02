@@ -241,25 +241,36 @@ class RankingDataProvider:
         return latest
 
     def fetch_metric(self, table: str, period: str) -> List[Dict]:
-        """通用指标表读取 - 每个币种只取最新一条"""
+        """通用指标表读取 - 只取最新一批数据（同一时间戳）"""
         rows = self._load_table_period(table, period)
         target_period = _normalize_period_value(period)
         
-        # 按币种去重，只保留最新
-        latest: Dict[str, Dict] = {}
+        # 第一遍：找出最新时间戳
+        max_ts = ""
         for row in rows:
             r = dict(row)
-            r_period = _normalize_period_value(str(r.get("周期")))
+            r_period = _normalize_period_value(str(r.get("周期", "")))
             if r_period != target_period:
                 continue
-            sym = str(r.get("交易对", "")).upper()
             ts = str(r.get("数据时间", ""))
-            if not sym:
-                continue
-            if sym not in latest or ts > latest[sym].get("数据时间", ""):
-                latest[sym] = r
+            if ts > max_ts:
+                max_ts = ts
         
-        return list(latest.values())
+        if not max_ts:
+            return []
+        
+        # 第二遍：只取最新时间戳的数据
+        result = []
+        for row in rows:
+            r = dict(row)
+            r_period = _normalize_period_value(str(r.get("周期", "")))
+            if r_period != target_period:
+                continue
+            ts = str(r.get("数据时间", ""))
+            if ts == max_ts:
+                result.append(r)
+        
+        return result
 
     def fetch_base_row(self, period: str, symbol: str) -> Dict:
         return self._fetch_single_row("基础数据", period, symbol)

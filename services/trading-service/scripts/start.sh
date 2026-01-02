@@ -16,6 +16,13 @@ SERVICE_LOG="$LOG_DIR/service.log"
 CHECK_INTERVAL="${CHECK_INTERVAL:-30}"
 STOP_TIMEOUT=10
 
+# 加载环境变量
+if [ -f "$SERVICE_DIR/config/.env" ]; then
+    set -a
+    source "$SERVICE_DIR/config/.env"
+    set +a
+fi
+
 # 启动命令 (MODE: simple/listener)
 MODE="${MODE:-simple}"
 START_CMD="python3 -u src/simple_scheduler.py"
