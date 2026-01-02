@@ -289,9 +289,9 @@ class MoneyFlowCard(RankingCard):
 
         # 优先使用基础表中的“资金流向”列，禁止用买卖额自行计算
         try:
-            # 24h/4h/12h 周期资金流向数据为0，回退到 1h
-            db_period = "1h" if period in ("24h", "4h", "12h", "1d") else period
-            base_map = self.provider.fetch_base(db_period)
+            # 直接使用用户选择的周期
+            # db_period = period  # 已移除回退逻辑
+            base_map = self.provider.fetch_base(period)
             for sym, r in base_map.items():
                 flow = float(r.get("资金流向") or 0)
                 quote_volume = float(r.get("成交额") or r.get("quote_volume") or 0)

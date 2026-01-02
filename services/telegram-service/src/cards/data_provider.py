@@ -77,9 +77,10 @@ def format_symbol(sym: str) -> str:
 
 
 def _normalize_period_value(period: str) -> str:
-    """统一周期表达"""
+    """统一周期表达 - 全部转为数据库格式"""
     p = (period or "").strip().lower()
-    alias = {"1d": "24h", "24h": "1d", "1day": "1d", "1w": "1w"}
+    # 统一转为数据库格式
+    alias = {"24h": "1d", "1day": "1d"}
     return alias.get(p, p)
 
 
