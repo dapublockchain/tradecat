@@ -340,7 +340,7 @@ def _compute_indicator(indicator_name: str, klines_data: Dict[str, bytes], inter
             result = ind.compute(df, symbol, interval)
             if result is not None and not result.empty:
                 results.append(result)
-        except:
+        except Exception:
             pass
     
     if results:
@@ -623,7 +623,7 @@ class FullAsyncEngine:
             ind_name, iv, result = future.result(timeout=0)
             if result is not None:
                 self._write_queue.put_nowait((ind_name, iv, result))
-        except:
+        except Exception:
             pass
     
     def stop(self):

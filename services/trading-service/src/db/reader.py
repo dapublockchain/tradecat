@@ -262,7 +262,7 @@ class DataWriter:
             # 检查表是否存在及列是否匹配
             try:
                 existing_cols = [c[1] for c in conn.execute(f'PRAGMA table_info([{table}])').fetchall()]
-            except:
+            except Exception:
                 existing_cols = []
             
             df_cols = list(df.columns)
@@ -344,7 +344,7 @@ class DataWriter:
                     # 检查表
                     try:
                         existing_cols = [c[1] for c in conn.execute(f'PRAGMA table_info([{table}])').fetchall()]
-                    except:
+                    except Exception:
                         existing_cols = []
                     
                     if not existing_cols or set(df_cols) != set(existing_cols):

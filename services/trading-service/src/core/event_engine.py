@@ -219,7 +219,7 @@ class EventEngine:
             while self._running:
                 try:
                     event = self._trigger_queue.get(timeout=1.0)
-                except:
+                except Exception:
                     continue
                 
                 executor.submit(self._run_single_event, event)

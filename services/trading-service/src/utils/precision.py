@@ -47,6 +47,6 @@ def trim_dataframe(df, exclude: set = None):
         if col not in exclude:
             try:
                 result[col] = result[col].apply(format_number)
-            except:
+            except Exception:
                 pass
     return result

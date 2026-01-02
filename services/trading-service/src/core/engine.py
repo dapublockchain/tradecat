@@ -94,7 +94,7 @@ def _compute_batch(args: Tuple) -> Dict[str, List[dict]]:
                     results[name].append(result.to_dict('records'))
                 elif last_ts:
                     results[name].append(placeholder)
-            except:
+            except Exception:
                 if last_ts:
                     results[name].append(placeholder)
     

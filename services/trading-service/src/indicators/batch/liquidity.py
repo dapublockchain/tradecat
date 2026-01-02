@@ -18,7 +18,7 @@ def calculate_amihud_ratio(df: pd.DataFrame) -> float:
         if volume_usd == 0 or np.isnan(volume_usd) or np.isnan(abs_return):
             return np.nan
         return abs_return / volume_usd
-    except:
+    except Exception:
         return np.nan
 
 
@@ -40,7 +40,7 @@ def calculate_amihud_zscore(df: pd.DataFrame, window: int = AMIHUD_WINDOW) -> tu
         score = 100 / (1 + np.exp(zscore))
         level = "优秀" if score >= 80 else "良好" if score >= 65 else "一般" if score >= 50 else "紧张" if score >= 30 else "危险"
         return current_il, level, score
-    except:
+    except Exception:
         return np.nan, "未知", 0.0
 
 
@@ -72,7 +72,7 @@ def calculate_kyle_lambda(df: pd.DataFrame) -> tuple:
         if len(y_clean) < max(5, window * 0.6):
             return np.nan, np.nan
         return _fit_simple_slope(x_clean, y_clean)
-    except:
+    except Exception:
         return np.nan, np.nan
 
 
@@ -85,7 +85,7 @@ def calculate_kyle_zscore(df: pd.DataFrame) -> tuple:
         score = 100 / (1 + np.exp(zscore))
         level = "优秀" if score >= 80 else "良好" if score >= 65 else "一般" if score >= 50 else "紧张" if score >= 30 else "危险"
         return lambda_val, level, score
-    except:
+    except Exception:
         return np.nan, "未知", 0.0
 
 
@@ -96,7 +96,7 @@ def calculate_volatility_component(df: pd.DataFrame) -> float:
         if np.isnan(volatility):
             return 0
         return float(np.clip(100 * np.exp(-volatility / 0.01), 0, 100))
-    except:
+    except Exception:
         return 0
 
 
@@ -107,7 +107,7 @@ def calculate_volume_component(df: pd.DataFrame) -> float:
         if avg_vol == 0 or np.isnan(avg_vol):
             return 0
         return float(np.clip(100 * (1 - np.exp(-current_vol / avg_vol)), 0, 100))
-    except:
+    except Exception:
         return 0
 
 
@@ -121,7 +121,7 @@ def calculate_liquidity_score(df: pd.DataFrame) -> tuple:
                  LIQUIDITY_WEIGHTS["volatility"] * volatility_comp + LIQUIDITY_WEIGHTS["volume"] * volume_comp)
         level = "优秀" if score >= 80 else "良好" if score >= 65 else "一般" if score >= 50 else "紧张" if score >= 30 else "危险"
         return score, level, amihud_score, kyle_score, volatility_comp, volume_comp
-    except:
+    except Exception:
         return 0, "未知", 0, 0, 0, 0
 
 
