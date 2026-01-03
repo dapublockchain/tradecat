@@ -124,7 +124,7 @@ TABLE_FIELDS: Dict[PanelType, Dict[str, Sequence[Tuple[str, str]]]] = {
             ("趋势方向", "趋势方向"),
             ("价格", "价格"),
         ),
-        "K线形态排行卡片": (("形态类型", "形态类型"), ("检测数量", "检测数量")),
+        # K线形态已移至独立按钮界面，不在表格中显示
         "VPVR排行卡片": (
             ("VPVR价格", "VPVR价"),
             ("价值区下沿", "价值区下沿"),
@@ -479,6 +479,64 @@ def format_float(val: float) -> str:
     else:
         s = f"{val:.2e}"
     return s.rstrip("0").rstrip(".")
+
+
+# ==================== K线形态独立界面 ====================
+
+def render_pattern_panel(symbol: str, period: str = "15m") -> str:
+    """渲染单币种 K线形态面板（独立界面）"""
+    provider = get_ranking_provider()
+    sym = format_symbol(symbol)
+    if not sym:
+        return "❌ 未提供有效币种"
+    
+    sym_full = sym + "USDT" if not sym.endswith("USDT") else sym
+    
+    # 获取所有周期的形态数据
+    periods = ["1m", "5m", "15m", "1h", "4h", "1d", "1w"]
+    lines = [f"🕯️ {sym} K线形态分析\n"]
+    
+    for p in periods:
+        row = provider._fetch_single_row("K线形态扫描器", p, sym_full)
+        if not row:
+            continue
+        patterns = row.get("形态类型", "")
+        count = row.get("检测数量", 0)
+        if not patterns:
+            continue
+        
+        # 分类形态
+        bullish = []  # 看涨
+        bearish = []  # 看跌
+        neutral = []  # 中性
+        
+        bullish_kw = ["锤子", "晨星", "吞没", "孕线", "头肩底", "双底", "三底", "上升", "看涨"]
+        bearish_kw = ["上吊", "黄昏", "乌鸦", "头肩顶", "双顶", "三顶", "下降", "看跌", "墓碑"]
+        
+        for pat in patterns.split(","):
+            pat = pat.strip()
+            if not pat:
+                continue
+            if any(k in pat for k in bullish_kw):
+                bullish.append(pat)
+            elif any(k in pat for k in bearish_kw):
+                bearish.append(pat)
+            else:
+                neutral.append(pat)
+        
+        lines.append(f"📊 {p} ({count}个形态)")
+        if bullish:
+            lines.append(f"  🟢 看涨: {', '.join(bullish)}")
+        if bearish:
+            lines.append(f"  🔴 看跌: {', '.join(bearish)}")
+        if neutral:
+            lines.append(f"  ⚪ 中性: {', '.join(neutral)}")
+        lines.append("")
+    
+    if len(lines) == 1:
+        lines.append("暂无形态数据")
+    
+    return "\n".join(lines)
 
 
 # ==================== 简单自测入口（非必须） ====================

@@ -415,6 +415,7 @@ def build_single_snapshot_keyboard(enabled_periods: dict, panel: str, enabled_ca
         panel_btn("基础数据", "basic"),
         panel_btn("合约数据", "futures"),
         panel_btn("高级数据", "advanced"),
+        InlineKeyboardButton("🕯️形态", callback_data="single_panel_pattern"),
     ]
     # 主控行：返回主菜单 / 刷新 / 下一页 / 上一页（无则省略按钮）
     row_ctrl: list[InlineKeyboardButton] = []
@@ -430,6 +431,23 @@ def build_single_snapshot_keyboard(enabled_periods: dict, panel: str, enabled_ca
         kb_rows.extend(row_cards)
     kb_rows.extend([row_period, row_panel, row_ctrl])
     return InlineKeyboardMarkup(kb_rows)
+
+
+def build_pattern_keyboard() -> InlineKeyboardMarkup:
+    """K线形态面板的按钮"""
+    from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("基础数据", callback_data="single_panel_basic"),
+            InlineKeyboardButton("合约数据", callback_data="single_panel_futures"),
+            InlineKeyboardButton("高级数据", callback_data="single_panel_advanced"),
+            InlineKeyboardButton("✅🕯️形态", callback_data="single_panel_pattern"),
+        ],
+        [
+            InlineKeyboardButton("🏠 返回主菜单", callback_data="main_menu"),
+            InlineKeyboardButton("🔄 刷新", callback_data="single_refresh"),
+        ]
+    ])
 
 
 def render_single_snapshot(symbol: str, panel: str, enabled_periods: dict, enabled_cards: dict, page: int = 0) -> tuple[str, object, int, int]:
@@ -3582,6 +3600,18 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reset_page = True
         elif button_data.startswith("single_panel_"):
             panel = button_data.replace("single_panel_", "")
+            # K线形态独立面板
+            if panel == "pattern":
+                from bot.single_token_snapshot import render_pattern_panel
+                states["single_panel"] = panel
+                text = render_pattern_panel(sym)
+                keyboard = build_pattern_keyboard()
+                try:
+                    await query.edit_message_text(text, reply_markup=keyboard, parse_mode='Markdown')
+                except BadRequest as e:
+                    if "message is not modified" not in str(e):
+                        logger.error("形态面板渲染失败: %s", e)
+                return
             if panel == "futures":
                 enabled["1m"] = False
                 enabled_cards = {}  # futures 默认全部启用
@@ -3597,6 +3627,16 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             enabled_cards[card] = not enabled_cards.get(card, True)
             reset_page = True
         elif button_data == "single_refresh":
+            # 形态面板刷新
+            if panel == "pattern":
+                from bot.single_token_snapshot import render_pattern_panel
+                text = render_pattern_panel(sym)
+                keyboard = build_pattern_keyboard()
+                try:
+                    await query.edit_message_text(text, reply_markup=keyboard, parse_mode='Markdown')
+                except BadRequest:
+                    pass
+                return
             reset_page = False
         elif button_data == "single_page_prev":
             page = max(0, page - 1)

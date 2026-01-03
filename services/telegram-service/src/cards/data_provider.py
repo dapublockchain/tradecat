@@ -311,33 +311,54 @@ class RankingDataProvider:
             cur = conn.cursor()
             norm_p = _normalize_period_value(period)
             sym_full = symbol.upper()
-            sym_with_usdt = sym_full + "USDT"
+            sym_with_usdt = sym_full if sym_full.endswith("USDT") else sym_full + "USDT"
+            sym_base = sym_full.replace("USDT", "")
+            
             cur.execute(f"PRAGMA table_info('{table}')")
             cols = [row[1] for row in cur.fetchall()]
             period_cols = [c for c in cols if c.lower() in ("周期", "period", "interval")]
-
-            sym_where = """
-                (upper(交易对)=? OR replace(upper(交易对),'USDT','')=?
-                 OR upper(币种)=? OR upper(symbol)=?)
-            """
-            sym_params = (sym_with_usdt, sym_full, sym_full, sym_full)
+            
+            # 动态构建 symbol 查询条件（只用存在的列）
+            sym_conds = []
+            sym_params = []
+            if "交易对" in cols:
+                sym_conds.append("(upper(交易对)=? OR replace(upper(交易对),'USDT','')=?)")
+                sym_params.extend([sym_with_usdt, sym_base])
+            if "币种" in cols:
+                sym_conds.append("upper(币种)=?")
+                sym_params.append(sym_base)
+            if "symbol" in cols:
+                sym_conds.append("upper(symbol)=?")
+                sym_params.append(sym_base)
+            
+            if not sym_conds:
+                return {}
+            sym_where = "(" + " OR ".join(sym_conds) + ")"
+            
+            # 动态构建 ORDER BY（只用存在的列）
+            order_cols = []
+            for oc in ["数据时间", "时间", "timestamp"]:
+                if oc in cols:
+                    order_cols.append(f"{oc} DESC")
+            order_cols.append("rowid DESC")
+            order_by = ", ".join(order_cols)
 
             if period_cols:
                 period_vals = (norm_p, period.lower(), period.upper(), period)
                 placeholders = ",".join("?" for _ in period_vals)
                 period_cond = " OR ".join([f"{col} IN ({placeholders})" for col in period_cols])
-                params = period_vals * len(period_cols) + sym_params
+                params = list(period_vals) * len(period_cols) + sym_params
                 cur.execute(f"""
                     SELECT * FROM '{table}'
                     WHERE ({period_cond}) AND {sym_where}
-                    ORDER BY 数据时间 DESC, 时间 DESC, timestamp DESC, rowid DESC
+                    ORDER BY {order_by}
                     LIMIT 1
                 """, params)
             else:
                 cur.execute(f"""
                     SELECT * FROM '{table}'
                     WHERE {sym_where}
-                    ORDER BY 数据时间 DESC, 时间 DESC, timestamp DESC, rowid DESC
+                    ORDER BY {order_by}
                     LIMIT 1
                 """, sym_params)
             row = cur.fetchone()
