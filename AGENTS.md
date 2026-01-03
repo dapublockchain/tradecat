@@ -134,6 +134,25 @@ sqlite3 libs/database/services/telegram-service/market_data.db
 ./scripts/export_timescaledb.sh
 ```
 
+### 3.5 历史数据导入
+
+从 HuggingFace 下载数据集后导入：
+
+```bash
+# 数据集地址: https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026
+
+# 1. 恢复表结构
+zstd -d schema.sql.zst -c | psql -h localhost -p 5433 -U postgres -d market_data
+
+# 2. 导入 K线数据
+zstd -d candles_1m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.candles_1m FROM STDIN WITH (FORMAT binary)"
+
+# 3. 导入期货数据
+zstd -d futures_metrics_5m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.binance_futures_metrics_5m FROM STDIN WITH (FORMAT binary)"
+```
+
 ---
 
 ## 4. Code Change Rules（修改约束）
@@ -285,9 +304,10 @@ tradecat/
 |:---|:---|:---|
 | 指标计算引擎 | `trading-service/src/core/engine.py` | 批量计算指标 |
 | K线形态检测 | `trading-service/src/indicators/batch/k_pattern.py` | TA-Lib + patternpy |
+| 期货情绪聚合 | `trading-service/src/indicators/batch/futures_aggregate.py` | OI/多空比/情绪 |
 | 数据提供者 | `telegram-service/src/cards/data_provider.py` | 读取 SQLite + 币种过滤 |
-| 排行榜服务 | `telegram-service/src/cards/排行榜服务.py` | 生成排行榜 |
-| 信号引擎 | `telegram-service/src/signals/engine.py` | 信号检测与触发 |
+| 单币快照 | `telegram-service/src/bot/single_token_snapshot.py` | 单币多周期数据表格 |
+| 共享币种模块 | `libs/common/symbols.py` | 统一币种过滤逻辑 |
 | 代理管理器 | `libs/common/proxy_manager.py` | 运行时代理重试+冷却 |
 
 ---
@@ -459,6 +479,8 @@ docs: 更新 README 快速开始指南
 | `COMPUTE_BACKEND` | trading-service | 计算后端 (thread/process) |
 | `BINANCE_API_DISABLED` | telegram-service | 禁用 Binance API |
 | `BLOCKED_SYMBOLS` | telegram-service | 屏蔽币种黑名单 |
+| `DISABLE_SINGLE_TOKEN_QUERY` | telegram-service | 禁用单币查询 (0=启用) |
+| `SNAPSHOT_HIDDEN_FIELDS` | telegram-service | 单币快照屏蔽字段 |
 
 ---
 

@@ -752,7 +752,31 @@ SELECT create_hypertable('market_data.binance_futures_metrics_5m', 'create_time'
 \q
 ```
 
-### 6.6 安装形态识别库（可选）
+### 6.6 导入历史数据（推荐）
+
+从 HuggingFace 下载预置数据集，无需从头采集：
+
+**数据集地址**: https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026
+
+```bash
+# 下载数据文件到 backups/timescaledb/
+cd ~/.projects/tradecat/backups/timescaledb
+
+# 1. 恢复表结构
+zstd -d schema.sql.zst -c | PGPASSWORD=OpenTD_pass psql -h localhost -p 5433 -U opentd -d market_data
+
+# 2. 导入 K线数据（约15GB，需要一些时间）
+zstd -d candles_1m.bin.zst -c | PGPASSWORD=OpenTD_pass psql -h localhost -p 5433 -U opentd -d market_data \
+    -c "COPY market_data.candles_1m FROM STDIN WITH (FORMAT binary)"
+
+# 3. 导入期货数据
+zstd -d futures_metrics_5m.bin.zst -c | PGPASSWORD=OpenTD_pass psql -h localhost -p 5433 -U opentd -d market_data \
+    -c "COPY market_data.binance_futures_metrics_5m FROM STDIN WITH (FORMAT binary)"
+```
+
+> 💡 导入后即可使用 trading-service 计算指标，无需等待数据采集。
+
+### 6.7 安装形态识别库（可选）
 
 ```bash
 cd ~/.projects/tradecat/services/trading-service
