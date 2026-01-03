@@ -240,6 +240,38 @@
 | 期货指标 | 每 5 分钟 | < 30秒 |
 | 技术指标 | 每分钟轮询 | < 3分钟 |
 
+### 📥 历史数据下载
+
+我们在 HuggingFace 上提供了完整的历史数据集，可直接下载导入使用：
+
+**🔗 数据集地址**: [https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026](https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026)
+
+| 数据集 | 说明 | 大小 |
+|:---|:---|:---|
+| `candles_1m.bin.zst` | K线数据 (2018-至今) | ~15 GB |
+| `futures_metrics_5m.bin.zst` | 期货指标 (2021-至今) | ~800 MB |
+| `schema.sql.zst` | 表结构 | < 1 MB |
+
+**导入步骤**:
+
+```bash
+# 1. 下载数据文件
+# 从 HuggingFace 下载 .bin.zst 文件到 backups/timescaledb/
+
+# 2. 恢复表结构
+zstd -d schema.sql.zst -c | psql -h localhost -p 5433 -U postgres -d market_data
+
+# 3. 导入 K线数据
+zstd -d candles_1m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.candles_1m FROM STDIN WITH (FORMAT binary)"
+
+# 4. 导入期货数据
+zstd -d futures_metrics_5m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.binance_futures_metrics_5m FROM STDIN WITH (FORMAT binary)"
+```
+
+> 💡 导入后即可使用 trading-service 计算指标，无需从头采集历史数据。
+
 ---
 
 ## 📈 技术指标
