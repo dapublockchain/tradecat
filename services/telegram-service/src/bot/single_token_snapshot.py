@@ -426,9 +426,11 @@ class SingleTokenSnapshot:
                         pass
                 if isinstance(val, (int, float)):
                     field_l = field.lower().replace("%", "")
-                    is_percent = any(k in field_l for k in (kw.lower() for kw in PERCENT_FIELD_KEYWORDS))
+                    # 排除斜率等非百分比字段
+                    is_slope = "斜率" in field
+                    is_percent = not is_slope and any(k in field_l for k in (kw.lower() for kw in PERCENT_FIELD_KEYWORDS))
                     # 百分比语义或绝对值<1 都按百分比展示
-                    if is_percent or abs(val) < 1:
+                    if is_percent or (abs(val) < 1 and not is_slope):
                         pct = val * 100
                         if abs(pct) < 1e-6:
                             return "0"
