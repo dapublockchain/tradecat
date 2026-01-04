@@ -6,24 +6,24 @@
 
 # 🐱 TradeCat
 
-**Crypto Data Analysis & Trading Platform**
+**Toy-level Data Analysis / Trading Data Platform**
 
-*All markets, all strategies, all data, all methods - trade everything, monitor everything*
+*All markets, all data, all methods - analyze everything, trade everything, monitor everything*
 
 [简体中文](README.md) | English
 
 ---
 
 <p>
-  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/TimescaleDB-99GB-orange?style=flat-square&logo=postgresql&logoColor=white" alt="TimescaleDB">
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/PostgreSQL-TimescaleDB-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="TimescaleDB">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
 </p>
 
 <p>
-  <a href="https://t.me/tradecat_ai_channel"><img src="https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram" alt="Telegram"></a>
-  <a href="https://t.me/glue_coding"><img src="https://img.shields.io/badge/Telegram-Community-blue?style=flat-square&logo=telegram" alt="Community"></a>
-  <a href="https://x.com/123olp"><img src="https://img.shields.io/badge/Twitter-@123olp-black?style=flat-square&logo=x" alt="Twitter"></a>
+  <a href="https://t.me/tradecat_ai_channel"><img src="https://img.shields.io/badge/Telegram-Channel-blue?style=for-the-badge&logo=telegram" alt="Telegram"></a>
+  <a href="https://t.me/glue_coding"><img src="https://img.shields.io/badge/Telegram-Group-blue?style=for-the-badge&logo=telegram" alt="Group"></a>
+  <a href="https://x.com/123olp"><img src="https://img.shields.io/badge/Twitter-@123olp-black?style=for-the-badge&logo=x" alt="Twitter"></a>
 </p>
 
 </div>
@@ -32,37 +32,220 @@
 
 ## 📖 Table of Contents
 
-- [✨ Features](#-features)
-- [🏗️ Architecture](#️-architecture)
-- [📊 Data Scale](#-data-scale)
-- [📈 Technical Indicators](#-technical-indicators)
-- [🤖 Telegram Bot](#-telegram-bot)
+- [💰 Support](#-support)
 - [🚀 Quick Start](#-quick-start)
+- [🏗️ Architecture](#️-architecture)
+- [✨ Features](#-features)
+- [📊 Data & Functions](#-data--functions)
 - [📁 Directory Structure](#-directory-structure)
 - [🔧 Operations Guide](#-operations-guide)
+- [📞 Contact](#-contact)
 
 ---
 
-## ✨ Features
+<details open>
+<summary><strong>Expand👉 💰 Support</strong></summary>
+
+If this project helps you, please consider supporting 🙏
+
+- **Binance UID**: `572155580`
+- **Tron (TRC20)**: `TQtBXCSTwLFHjBqTS4rNUp7ufiGx51BRey`
+- **Solana**: `HjYhozVf9AQmfv7yv79xSNs6uaEU5oUk2USasYQfUYau`
+- **Ethereum (ERC20)**: `0xa396923a71ee7D9480b346a17dDeEb2c0C287BBC`
+- **BNB Smart Chain (BEP20)**: `0xa396923a71ee7D9480b346a17dDeEb2c0C287BBC`
+- **Bitcoin**: `bc1plslluj3zq3snpnnczplu7ywf37h89dyudqua04pz4txwh8z5z5vsre7nlm`
+- **Sui**: `0xb720c98a48c77f2d49d375932b2867e793029e6337f1562522640e4f84203d2e`
+
+</details>
+
+---
+
+<details open>
+<summary><strong>Expand👉 🚀 Quick Start</strong></summary>
+
+### 🤖 AI One-Click Install (Recommended)
+
+> Copy the prompt below to **Claude / ChatGPT / Cursor / Kiro**, AI will automatically execute installation with zero manual intervention
+
+<details>
+<summary><strong>Expand👉 📋 Installation Prompt</strong></summary>
+
+```
+Follow the instructions at https://github.com/tukuaiai/tradecat/blob/main/README.md to install TradeCat
+
+Requirements:
+1. Execute installation commands directly after reading the docs, don't generate scripts
+2. Execute step by step, continue after confirming each step succeeds
+3. Automatically analyze and fix errors
+4. Run ./scripts/verify.sh to verify after installation
+5. Zero manual intervention throughout
+```
+
+</details>
+
+### 🪟 Windows WSL2 Users
+
+Create `.wslconfig` in Windows user directory:
+
+```powershell
+notepad "$env:USERPROFILE\.wslconfig"
+```
+
+Write:
+
+```ini
+[wsl2]
+memory=10GB
+processors=6
+swap=12GB
+networkingMode=mirrored
+```
+
+Restart WSL: `wsl --shutdown`, then use the AI installation prompt above.
+
+### ⚙️ Configure Bot Token (Required)
+
+```bash
+vim ~/.projects/tradecat/services/telegram-service/config/.env
+```
+
+```ini
+TELEGRAM_BOT_TOKEN=your_token
+# If proxy needed
+HTTPS_PROXY=http://127.0.0.1:7890
+```
+
+### 📦 Download Historical Data (Optional)
+
+Download pre-built datasets from HuggingFace to skip lengthy historical backfill:
+
+🔗 **Dataset**: [huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026](https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026)
+
+```bash
+# Import candlestick data (373M records)
+zstd -d candles_1m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.candles_1m FROM STDIN WITH (FORMAT binary)"
+
+# Import futures data (94M records)
+zstd -d futures_metrics_5m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.binance_futures_metrics_5m FROM STDIN WITH (FORMAT binary)"
+```
+
+### 🎬 Start Services
+
+```bash
+cd ~/.projects/tradecat
+./scripts/start.sh start     # Start
+./scripts/start.sh status    # Check status
+```
+
+### ✅ Verify Installation
+
+```bash
+./scripts/verify.sh
+```
+
+---
+
+<details>
+<summary><strong>Expand👉 📖 Manual Installation Steps</strong></summary>
+
+### Requirements
+
+| Dependency | Version | Notes |
+|:---|:---|:---|
+| Python | 3.10+ | 3.12 recommended |
+| PostgreSQL | 16+ | TimescaleDB extension required |
+| TA-Lib | 0.4+ | System library, install separately |
+| SQLite | 3.x | System built-in |
+
+### Installation Steps
+
+#### 1. Clone Repository
+
+```bash
+git clone https://github.com/tukuaiai/tradecat.git
+cd tradecat
+```
+
+#### 2. Install System Dependencies
+
+```bash
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y build-essential python3-dev
+
+# Install TA-Lib
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+tar -xzf ta-lib-0.4.0-src.tar.gz
+cd ta-lib && ./configure --prefix=/usr && make && sudo make install
+cd .. && rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+```
+
+#### 3. Initialize
+
+```bash
+# Initialize all services (create venv, install deps, copy config)
+./scripts/init.sh
+
+# Or initialize single service
+./scripts/init.sh data-service
+```
+
+#### 4. Configure Environment Variables
+
+```bash
+# Edit service configs (init.sh auto-copies from .env.example)
+vim config/.env
+```
+
+#### 5. Start Services
+
+```bash
+# Start all services
+./scripts/start.sh start
+
+# Check status
+./scripts/start.sh status
+
+# Stop all
+./scripts/start.sh stop
+```
+
+#### 6. Verify Installation
+
+```bash
+./scripts/verify.sh
+```
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><strong>Expand👉 ✨ Features</strong></summary>
 
 <table>
 <tr>
 <td width="50%">
 
-### 🔄 Real-time Data Collection
-- **WebSocket Streaming** - Binance Futures all symbols
-- **Multi-timeframe** - 1m/5m/15m/1h/4h/1d/1w
-- **Futures Metrics** - OI, Long/Short Ratio, Funding Rate
-- **Latency** - < 5 seconds
+### 🔄 Multi-Market Data Collection
+- **Crypto** - CCXT (100+ exchanges) + Cryptofeed (WebSocket)
+- **China A-Shares** - AKShare + BaoStock (free full data)
+- **US/Global Stocks** - yfinance + pandas-datareader
+- **Macro Economics** - FRED API (Federal Reserve official)
+- **Data Aggregation** - OpenBB (100+ data sources)
 
 </td>
 <td width="50%">
 
 ### 📊 38 Technical Indicators
-- **Trend** - EMA/MACD/SuperTrend/ADX
-- **Momentum** - RSI/KDJ/CCI/MFI
-- **Volatility** - Bollinger/ATR/Keltner
-- **Patterns** - 61 candlestick + price patterns
+- **Trend** - EMA/MACD/SuperTrend/ADX/Ichimoku
+- **Momentum** - RSI/KDJ/CCI/MFI/WilliamsR
+- **Volatility** - Bollinger Bands/ATR/Keltner/Support-Resistance
+- **Pattern Recognition** - TA-Lib 61 candlestick patterns + price patterns
 
 </td>
 </tr>
@@ -70,238 +253,393 @@
 <td width="50%">
 
 ### 🤖 Telegram Bot
-- **Live Rankings** - 20+ ranking cards
-- **Signal Alerts** - Pattern breakouts, indicator anomalies
-- **Interactive Query** - Single token details
-- **AI Analysis** - Wyckoff-based deep analysis
+- **Real-time Rankings** - 20+ ranking cards
+- **Signal Push** - Pattern breakouts, indicator anomalies
+- **Interactive Query** - Single token details, multi-timeframe panels
+- **AI Analysis** - Wyckoff deep market analysis
 
 </td>
 <td width="50%">
 
 ### 🗄️ Massive Data Storage
-- **Candle Data** - 373M records (2018-present)
+- **Candlestick Data** - 373M records (2018-present)
 - **Futures Data** - 94M records (2021-present)
 - **Storage Engine** - TimescaleDB time-series optimized
-- **Compressed Backup** - zstd ~15GB
+- **Derivatives Pricing** - QuantLib options/bonds
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🧠 AI Smart Analysis
+- **Wyckoff Methodology** - Market structure, supply/demand zones, phase identification
+- **Multi-Model Support** - Gemini / OpenAI / Claude / DeepSeek
+- **Professional Prompts** - Built-in trading analyst role prompts
+- **Context Enhancement** - Auto-inject real-time candlestick/indicator/futures data
+
+</td>
+<td width="50%">
+
+### 🔔 Signal Detection Engine
+- **109 Rules** - Covering 35 indicator tables
+- **Multi-Dimensional Detection** - Trend/momentum/pattern/futures
+- **Subscription Management** - User-defined push preferences
+- **Cooldown Mechanism** - Prevent duplicate pushes
 
 </td>
 </tr>
 </table>
 
+</details>
+
 ---
 
-## 🏗️ Architecture
+<details open>
+<summary><strong>Expand👉 🏗️ Architecture</strong></summary>
+
+### Service Description
+
+| Service | Port | Responsibility | Tech Stack |
+|:---|:---:|:---|:---|
+| **data-service** | - | Crypto candlestick collection, futures metrics, historical backfill | Python, asyncio, ccxt, cryptofeed |
+| **markets-service** | - | Multi-market data collection (US/China stocks, macro, derivatives) | yfinance, akshare, fredapi, QuantLib |
+| **trading-service** | - | 38 technical indicators calculation, high-priority token filtering | Python, pandas, numpy, TA-Lib |
+| **telegram-service** | - | Bot interaction, rankings display, signal push | python-telegram-bot, aiohttp |
+| **ai-service** | - | AI analysis, Wyckoff methodology (as telegram-service submodule) | Gemini/OpenAI/Claude/DeepSeek |
+| **order-service** | - | Trade execution, Avellaneda-Stoikov market making | Python, ccxt, cryptofeed |
+| **TimescaleDB** | 5433 | Candlestick storage, futures data, time-series query optimization | PostgreSQL 16 + TimescaleDB |
+
+### Data Flow
 
 ```
-                              ┌─────────────────────────────────────────┐
-                              │            Binance Exchange API          │
-                              │   WebSocket Candles  │  REST Futures     │
-                              └────────┬─────────────┴──────────┬────────┘
-                                       │                        │
-                    ┌──────────────────▼────────────────────────▼──────────────────┐
-                    │                    data-service                              │
-                    │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
-                    │  │  backfill   │  │    live     │  │   metrics   │          │
-                    │  │  Gap Fill   │  │  WebSocket  │  │  Futures    │          │
-                    │  └─────────────┘  └─────────────┘  └─────────────┘          │
-                    └──────────────────────────┬───────────────────────────────────┘
-                                               │
-                    ┌──────────────────────────▼───────────────────────────────────┐
-                    │                     TimescaleDB                              │
-                    │  ┌─────────────────────┐  ┌─────────────────────┐           │
-                    │  │    candles_1m       │  │  futures_metrics    │           │
-                    │  │   373M rows / 99GB  │  │  94M rows / 5GB     │           │
-                    │  └─────────────────────┘  └─────────────────────┘           │
-                    └──────────────────────────┬───────────────────────────────────┘
-                                               │
-                    ┌──────────────────────────▼───────────────────────────────────┐
-                    │                   trading-service                            │
-                    │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
-                    │  │   engine    │  │ indicators  │  │  scheduler  │          │
-                    │  │  Compute    │  │  38 types   │  │  Cron Jobs  │          │
-                    │  └─────────────┘  └─────────────┘  └─────────────┘          │
-                    └──────────────────────────┬───────────────────────────────────┘
-                                               │
-                    ┌──────────────────────────▼───────────────────────────────────┐
-                    │                    market_data.db                            │
-                    │              SQLite Indicator Results (38 tables)            │
-                    └──────────────────────────┬───────────────────────────────────┘
-                                               │
-          ┌────────────────────────────────────┼────────────────────────────────────┐
-          │                                    │                                    │
-          ▼                                    ▼                                    ▼
-┌─────────────────────┐          ┌─────────────────────┐          ┌─────────────────────┐
-│  telegram-service   │          │    ai-service       │          │   order-service     │
-│  ┌───────────────┐  │          │  ┌───────────────┐  │          │  ┌───────────────┐  │
-│  │  Bot + Cards  │  │          │  │  LLM Analysis │  │          │  │ Market Maker  │  │
-│  └───────────────┘  │          │  └───────────────┘  │          │  └───────────────┘  │
-└─────────────────────┘          └─────────────────────┘          └─────────────────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Telegram Users    │
-└─────────────────────┘
+data-service → TimescaleDB → trading-service → SQLite → telegram-service → User
+                                                  ↓
+                                            ai-service (AI Analysis)
 ```
 
-### Services
+</details>
 
-| Service | Description | Tech Stack |
+---
+
+<details>
+<summary><strong>Expand👉 📊 Data & Functions</strong></summary>
+
+### 📊 Data Scale
+
+**🔗 Historical Data Download**: [HuggingFace Dataset](https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026)
+
+| Dataset | Description | Size |
 |:---|:---|:---|
-| **data-service** | WebSocket candles, futures metrics, gap backfill | Python, asyncio, ccxt |
-| **trading-service** | 38 technical indicators, scheduling | Python, pandas, TA-Lib |
-| **telegram-service** | Bot interaction, rankings, signals | python-telegram-bot |
-| **ai-service** | LLM-powered market analysis | Gemini API |
-| **order-service** | Trade execution, Avellaneda-Stoikov MM | Python, ccxt |
-| **TimescaleDB** | Time-series storage | PostgreSQL 16 + TimescaleDB |
+| `candles_1m.bin.zst` | Candlestick data (2018-present, 373M records) | ~15 GB |
+| `futures_metrics_5m.bin.zst` | Futures metrics (2021-present, 94M records) | ~800 MB |
 
----
+<details>
+<summary><strong>Expand👉 📋 Data Details & Import Steps</strong></summary>
 
-## 📊 Data Scale
+### Data Overview
 
-| Dataset | Records | Symbols | Time Range | Storage |
-|:---|---:|---:|:---|---:|
-| **Candles (1m)** | 373,342,599 | 615 | 2018-01 ~ present | 99 GB |
-| **Futures Metrics** | 94,576,458 | 612 | 2021-12 ~ present | 5 GB |
+<table>
+<tr>
+<td width="50%">
 
-### Historical Data Download
+#### 📈 Candlestick Data (candles_1m)
 
-Full dataset available on HuggingFace:
+| Metric | Value |
+|:---|---:|
+| **Total Records** | 373,342,599 |
+| **Token Count** | 615 |
+| **Time Range** | 2018-01-01 ~ present |
+| **Storage Size** | 99 GB |
+| **Compressed** | ~15 GB (zstd) |
 
-🔗 **Dataset**: [huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026](https://huggingface.co/datasets/123olp/binance-futures-ohlcv-2018-2026)
+**Fields**:
+- `bucket_ts` - Candlestick timestamp
+- `open/high/low/close` - OHLC prices
+- `volume` - Trading volume
+- `quote_volume` - Quote volume (USDT)
+- `taker_buy_volume` - Taker buy volume
+
+</td>
+<td width="50%">
+
+#### 📊 Futures Data (futures_metrics_5m)
+
+| Metric | Value |
+|:---|---:|
+| **Total Records** | 94,576,458 |
+| **Token Count** | 612 |
+| **Time Range** | 2021-12-01 ~ present |
+| **Storage Size** | 5 GB |
+| **Compressed** | ~800 MB (zstd) |
+
+**Fields**:
+- `sum_open_interest` - Open interest
+- `sum_open_interest_value` - OI value (USDT)
+- `sum_toptrader_long_short_ratio` - Top trader L/S ratio
+- `sum_taker_long_short_vol_ratio` - Taker L/S volume ratio
+
+</td>
+</tr>
+</table>
+
+### Update Frequency
+
+| Data Type | Frequency | Latency |
+|:---|:---|:---|
+| Candlestick (1m) | Real-time WebSocket | < 5s |
+| Candlestick (5m/15m/1h/4h/1d/1w) | Aggregation | < 10s |
+| Futures Metrics | Every 5 minutes | < 30s |
+| Technical Indicators | Per minute polling | < 3min |
+
+### Import Steps
 
 ```bash
-# Import candles
+# 1. Download data files
+# Download .bin.zst files from HuggingFace to backups/timescaledb/
+
+# 2. Restore schema
+zstd -d schema.sql.zst -c | psql -h localhost -p 5433 -U postgres -d market_data
+
+# 3. Import candlestick data
 zstd -d candles_1m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
     -c "COPY market_data.candles_1m FROM STDIN WITH (FORMAT binary)"
+
+# 4. Import futures data
+zstd -d futures_metrics_5m.bin.zst -c | psql -h localhost -p 5433 -U postgres -d market_data \
+    -c "COPY market_data.binance_futures_metrics_5m FROM STDIN WITH (FORMAT binary)"
 ```
 
----
+> 💡 After import, you can use trading-service to calculate indicators without collecting historical data from scratch.
 
-## 📈 Technical Indicators
+</details>
 
-### 38 Indicators by Category
+### 📈 Technical Indicators
 
-| Category | Indicators |
+<details>
+<summary><strong>Expand👉 🔥 Trend Indicators (8)</strong></summary>
+
+| Indicator | Description | Parameters |
+|:---|:---|:---|
+| **EMA** | Exponential Moving Average | 7/25/99 periods |
+| **MACD** | Moving Average Convergence Divergence | 12/26/9 |
+| **SuperTrend** | Super Trend | ATR period 10, multiplier 3 |
+| **ADX** | Average Directional Index | 14 periods |
+| **Ichimoku** | Ichimoku Cloud | 9/26/52 |
+| **Donchian** | Donchian Channel | 20 periods |
+| **Keltner** | Keltner Channel | 20 periods, ATR 2x |
+| **Trend Line** | Auto trend line detection | Dynamic |
+
+</details>
+
+<details>
+<summary><strong>Expand👉 📊 Momentum Indicators (6)</strong></summary>
+
+| Indicator | Description | Parameters |
+|:---|:---|:---|
+| **RSI** | Relative Strength Index | 14 periods |
+| **KDJ** | Stochastic Oscillator | 9/3/3 |
+| **CCI** | Commodity Channel Index | 20 periods |
+| **WilliamsR** | Williams %R | 14 periods |
+| **MFI** | Money Flow Index | 14 periods |
+| **RSI Harmonic** | RSI Divergence Detection | 14 periods |
+
+</details>
+
+<details>
+<summary><strong>Expand👉 📉 Volatility Indicators (4)</strong></summary>
+
+| Indicator | Description | Parameters |
+|:---|:---|:---|
+| **Bollinger Bands** | Bollinger Bands | 20 periods, 2 std dev |
+| **ATR** | Average True Range | 14 periods |
+| **ATR Range** | Volatility Ranking | 14 periods |
+| **Support/Resistance** | Key Level Detection | Dynamic |
+
+</details>
+
+<details>
+<summary><strong>Expand👉 📦 Volume Indicators (6)</strong></summary>
+
+| Indicator | Description | Usage |
+|:---|:---|:---|
+| **OBV** | On-Balance Volume | Volume-price divergence |
+| **CVD** | Cumulative Volume Delta | Buy/sell pressure |
+| **VWAP** | Volume Weighted Average Price | Institutional cost |
+| **Volume Ratio** | Relative Volume | Volume surge detection |
+| **Liquidity** | Order book depth | Slippage estimation |
+| **VPVR** | Volume Profile | High volume zones |
+
+</details>
+
+<details>
+<summary><strong>Expand👉 🕯️ Candlestick Patterns (61+)</strong></summary>
+
+**Candlestick Patterns (TA-Lib, 61 types)**
+
+| Type | Patterns |
 |:---|:---|
-| **Trend (8)** | EMA, MACD, SuperTrend, ADX, Ichimoku, Donchian, Keltner, Trendlines |
-| **Momentum (6)** | RSI, KDJ, CCI, WilliamsR, MFI, RSI Harmonic |
-| **Volatility (4)** | Bollinger Bands, ATR, Support/Resistance, ATR Volatility |
-| **Volume (6)** | OBV, CVD, VWAP, Volume Ratio, Liquidity, VPVR |
-| **Futures (8)** | Open Interest, OI Value, Long/Short Ratio, Taker Ratio, Funding Rate, Liquidations, Sentiment Aggregate |
-| **Patterns (61+)** | TA-Lib candlestick patterns + Head & Shoulders, Double Top/Bottom, Triangles, Wedges |
+| **Reversal** | Hammer, Hanging Man, Engulfing, Harami, Morning Star, Evening Star, Three Black Crows |
+| **Continuation** | Three Methods, Separating Lines, Side-by-Side |
+| **Neutral** | Doji, Spinning Top, High Wave |
 
----
+**Price Patterns (patternpy)**
 
-## 🤖 Telegram Bot
+| Type | Pattern | Signal |
+|:---|:---|:---|
+| **Head & Shoulders** | H&S Top, H&S Bottom | Strong reversal |
+| **Double** | Double Top, Double Bottom | Medium reversal |
+| **Triangle** | Ascending, Descending, Symmetrical | Breakout direction |
+| **Wedge** | Rising Wedge, Falling Wedge | Counter breakout |
+| **Channel** | Ascending, Descending, Horizontal | Trend continuation |
+
+</details>
+
+<details>
+<summary><strong>Expand👉 📡 Futures Indicators (8)</strong></summary>
+
+| Indicator | Description | Signal Meaning |
+|:---|:---|:---|
+| **Open Interest** | Open Interest | Market participation |
+| **OI Value** | OI Value (USDT) | Capital scale |
+| **Long/Short Ratio** | Long/Short Ratio | Retail sentiment |
+| **Top Trader L/S** | Top Trader L/S | Smart money direction |
+| **Taker Buy/Sell** | Taker Buy/Sell | Instant sentiment |
+| **Funding Rate** | Funding Rate | Long/short cost |
+| **Liquidations** | Liquidations | Extreme market |
+| **Futures Sentiment** | Aggregate Score | Multi-dimensional analysis |
+
+</details>
+
+### High Priority Algorithm
+
+System automatically identifies high-priority tokens (~130-150), based on:
+
+```
+High Priority = Candlestick Dimension ∪ Futures Dimension
+
+Candlestick Dimension:
+  - Quote Volume Top 50
+  - Volatility Top 30  
+  - Price Change Top 30
+
+Futures Dimension:
+  - OI Value Top 30
+  - Extreme Taker Ratio (>1.5 or <0.67)
+  - Extreme L/S Ratio (>2.0 or <0.5)
+```
+
+### 🤖 Telegram Bot
+
+#### Features Overview
+
+<table>
+<tr>
+<td width="50%">
+
+##### 📊 Ranking Cards (20+ types)
+
+| Category | Cards |
+|:---|:---|
+| **Basic** | RSI, MACD, KDJ, Bollinger, OBV |
+| **Advanced** | EMA, ATR, CVD, MFI, VWAP, Liquidity |
+| **Pattern** | Candlestick patterns, Support/Resistance, Trend lines |
+| **Futures** | Open Interest, L/S Ratio, Taker Ratio |
+
+</td>
+<td width="50%">
+
+#### 🔔 Signal Push
+
+| Signal Type | Trigger Condition |
+|:---|:---|
+| **Pattern Breakout** | H&S, Double Top detected |
+| **Indicator Anomaly** | RSI overbought/oversold, MACD cross |
+| **Volume-Price Anomaly** | Volume surge, price breakout |
+| **Futures Anomaly** | Extreme L/S ratio, OI surge |
+
+</td>
+</tr>
+</table>
 
 ### Commands & Triggers
 
 | Trigger | Function | Description |
 |:---|:---|:---|
 | `BTC!` | Single Token Query | Interactive multi-panel view |
-| `BTC!!` | Full TXT Export | Download complete psql-style report |
-| `BTC@` | AI Analysis | Wyckoff-based deep market analysis |
+| `BTC!!` | Full TXT Export | Download psql-style full report |
+| `BTC@` | AI Analysis | Wyckoff deep market analysis |
 | `/data` | Data Panel | Access ranking cards |
-| `/ai` | AI Analysis | Start AI coin selection |
-| `/query` | Coin Query | Show available symbols |
+| `/ai` | AI Analysis | Enter AI token selection |
+| `/query` | Token Query | Show queryable tokens |
 | `/help` | Help | Usage instructions |
 
-### Keyboard Layout
-
-```
-┌─────────────┬─────────────┬─────────────┐
-│ 📊 Data     │ 🔍 Query    │  🤖 AI      │
-├─────────────┴──────┬──────┴─────────────┤
-│     🏠 Menu        │      ℹ️ Help       │
-└────────────────────┴────────────────────┘
-```
-
-### Single Token Query Panels
-
-1. **Basic** - Bollinger, KDJ, MACD, RSI, OBV, Volume Ratio
-2. **Futures** - OI, Long/Short Ratio, Sentiment
-3. **Advanced** - Support/Resistance, ATR, Liquidity, Trend, VWAP
-4. **Patterns** - K-line pattern detection (61 types)
+</details>
 
 ---
 
-## 🚀 Quick Start
-
-### Requirements
-
-| Dependency | Version |
-|:---|:---|
-| Python | 3.10+ |
-| PostgreSQL | 16+ with TimescaleDB |
-| TA-Lib | 0.4+ |
-
-### Installation
-
-```bash
-# Clone
-git clone https://github.com/tukuaiai/tradecat.git
-cd tradecat
-
-# Install TA-Lib (Ubuntu/Debian)
-wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-tar -xzf ta-lib-0.4.0-src.tar.gz
-cd ta-lib && ./configure --prefix=/usr && make && sudo make install
-cd .. && rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
-
-# Initialize all services
-./scripts/init.sh
-
-# Configure
-cp config/.env.example config/.env
-vim config/.env  # Set BOT_TOKEN, DATABASE_URL, etc.
-
-# Start (daemon mode with auto-restart)
-./scripts/start.sh start
-
-# Check status
-./scripts/start.sh status
-```
-
----
-
-## 📁 Directory Structure
+<details>
+<summary><strong>Expand👉 📁 Directory Structure</strong></summary>
 
 ```
 tradecat/
-├── config/                     # Unified configuration
-│   ├── .env                    # Production config (gitignored)
-│   └── .env.example            # Template
 │
-├── scripts/                    # Global scripts
-│   ├── init.sh                 # Initialize services
-│   ├── start.sh                # Start/stop/status
-│   └── verify.sh               # Verification
+├── 📂 config/                      # Unified config (shared by all services)
+│   ├── .env                        # Production config (contains secrets, not committed)
+│   ├── .env.example                # Config template
+│   └── logrotate.conf              # Log rotation
 │
-├── services/                   # Microservices
-│   ├── data-service/           # Data collection
-│   ├── trading-service/        # Indicator computation
-│   ├── telegram-service/       # Telegram Bot
-│   ├── ai-service/             # AI analysis
-│   └── order-service/          # Trade execution
+├── 📂 scripts/                     # Global scripts
+│   ├── install.sh                  # One-click install
+│   ├── init.sh                     # Initialization script
+│   ├── start.sh                    # Unified start/daemon script
+│   ├── verify.sh                   # Verification script
+│   ├── export_timescaledb.sh       # Data export
+│   └── timescaledb_compression.sh  # Compression management
 │
-├── libs/
-│   ├── database/               # SQLite indicator data
-│   └── common/                 # Shared utilities
+├── 📂 services/                    # Microservices (6)
+│   │
+│   ├── 📂 data-service/            # Crypto data collection service
+│   ├── 📂 markets-service/         # Multi-market data collection (US/China stocks, macro)
+│   ├── 📂 trading-service/         # Indicator calculation service
+│   ├── 📂 telegram-service/        # Telegram Bot
+│   ├── 📂 ai-service/              # AI analysis service
+│   └── 📂 order-service/           # Trade execution service
 │
-└── backups/                    # Database backups
+├── 📂 libs/                        # Shared libraries
+│   ├── 📂 database/                # Database files
+│   │   └── 📂 services/telegram-service/
+│   │       └── market_data.db      # SQLite indicator data
+│   └── 📂 common/                  # Shared utilities
+│       ├── symbols.py              # Token management module
+│       └── proxy_manager.py        # Proxy manager
+│
+├── 📂 backups/                     # Backup directory
+│   └── 📂 timescaledb/             # Database backups
+│
+├── Makefile                        # Common commands
+├── README.md                       # Project documentation (Chinese)
+├── README_EN.md                    # Project documentation (English)
+└── AGENTS.md                       # AI Agent guide
 ```
+
+</details>
 
 ---
 
-## 🔧 Operations Guide
+<details>
+<summary><strong>Expand👉 🔧 Operations Guide</strong></summary>
 
 ### Service Management
 
+<details>
+<summary><strong>Expand👉 Unified Management (Recommended)</strong></summary>
+
 ```bash
-# Start all (daemon mode - auto restart on crash)
+# Start all services
 ./scripts/start.sh start
 
-# Status
+# Check status
 ./scripts/start.sh status
 
 # Stop all
@@ -311,47 +649,142 @@ tradecat/
 ./scripts/start.sh restart
 ```
 
-### Database
+</details>
 
-```bash
-# Connect to TimescaleDB
-PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d market_data
-
-# Check candle count
-SELECT COUNT(*) FROM market_data.candles_1m;
-
-# Connect to SQLite (indicators)
-sqlite3 libs/database/services/telegram-service/market_data.db
-```
-
-### Logs
+<details>
+<summary><strong>Expand👉 Single Service Management</strong></summary>
 
 ```bash
 # data-service
-tail -f services/data-service/logs/ws.log
-tail -f services/data-service/logs/backfill.log
+cd services/data-service
+./scripts/start.sh daemon   # Start + daemon
+./scripts/start.sh start    # Start only
+./scripts/start.sh stop     # Stop
+./scripts/start.sh status   # Status
 
-# trading-service
-tail -f services/trading-service/logs/simple_scheduler.log
-
-# telegram-service
-tail -f services/telegram-service/logs/bot.log
+# trading-service / telegram-service same as above
 ```
+
+</details>
+
+<details>
+<summary><strong>Expand👉 Initialization</strong></summary>
+
+```bash
+# Initialize all services
+./scripts/init.sh
+
+# Initialize single service
+./scripts/init.sh data-service
+```
+
+</details>
+
+### Database Operations
+
+<details>
+<summary><strong>Expand👉 TimescaleDB Queries</strong></summary>
+
+```bash
+# Connect to database
+PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d market_data
+
+# Common queries
+-- Candlestick count
+SELECT COUNT(*) FROM market_data.candles_1m;
+
+-- Latest data time
+SELECT MAX(bucket_ts) FROM market_data.candles_1m;
+
+-- Token list
+SELECT DISTINCT symbol FROM market_data.candles_1m ORDER BY symbol;
+```
+
+</details>
+
+<details>
+<summary><strong>Expand👉 SQLite Queries</strong></summary>
+
+```bash
+# Connect to database
+sqlite3 libs/database/services/telegram-service/market_data.db
+
+# Common queries
+.tables                          -- List all tables
+.schema "K线形态扫描器.py"        -- View table schema
+```
+
+</details>
+
+### Common Issues
+
+<details>
+<summary><strong>Expand👉 Q: TA-Lib installation failed?</strong></summary>
+
+```bash
+# Install system library first
+sudo apt-get install -y build-essential
+
+# Download and compile TA-Lib
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+tar -xzf ta-lib-0.4.0-src.tar.gz
+cd ta-lib
+./configure --prefix=/usr
+make
+sudo make install
+
+# Then install Python package
+pip install TA-Lib
+```
+
+</details>
+
+<details>
+<summary><strong>Expand👉 Q: Candlestick patterns showing "No Pattern"?</strong></summary>
+
+```bash
+# Check if TA-Lib is installed
+python -c "import talib; print(talib.__version__)"
+
+# Install pattern libraries
+pip install m-patternpy
+pip install tradingpattern --no-deps
+
+# Restart trading-service
+cd services/trading-service
+./scripts/start.sh restart
+```
+
+</details>
+
+<details>
+<summary><strong>Expand👉 Q: Database connection failed?</strong></summary>
+
+```bash
+# Check if PostgreSQL is running
+sudo systemctl status postgresql
+
+# Check port
+ss -tlnp | grep 5433
+
+# Test connection
+PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -c "\l"
+```
+
+</details>
+
+</details>
 
 ---
 
-## 📞 Contact
+<details open>
+<summary><strong>Expand👉 📞 Contact</strong></summary>
 
-- **Telegram Channel**: [@tradecat_ai_channel](https://t.me/tradecat_ai_channel)
-- **Community**: [@glue_coding](https://t.me/glue_coding)
-- **Twitter/X**: [@123olp](https://x.com/123olp)
+- **Telegram Channel**: [tradecat_ai_channel](https://t.me/tradecat_ai_channel)
+- **Telegram Group**: [glue_coding](https://t.me/glue_coding)
+- **Twitter/X**: [123olp](https://x.com/123olp)
 
-### Support the Project
-
-- **Binance UID**: `572155580`
-- **Tron (TRC20)**: `TQtBXCSTwLFHjBqTS4rNUp7ufiGx51BRey`
-- **Solana**: `HjYhozVf9AQmfv7yv79xSNs6uaEU5oUk2USasYQfUYau`
-- **Ethereum (ERC20)**: `0xa396923a71ee7D9480b346a17dDeEb2c0C287BBC`
+</details>
 
 ---
 
@@ -361,8 +794,26 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
+## Star History
+
+<a href="https://www.star-history.com/#tukuaiai/tradecat&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=tukuaiai/tradecat&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=tukuaiai/tradecat&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tukuaiai/tradecat&type=date&legend=top-left" />
+ </picture>
+</a>
+
+---
+
 <div align="center">
 
+### ⭐ If this project helps you, please give it a Star!
+
+---
+
 **Made with ❤️ by [tukuaiai](https://github.com/tukuaiai)**
+
+[⬆ Back to Top](#-tradecat)
 
 </div>
