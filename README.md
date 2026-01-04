@@ -21,6 +21,13 @@
 </p>
 
 <p>
+  <img src="https://img.shields.io/badge/Pandas-数据处理-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas">
+  <img src="https://img.shields.io/badge/TA--Lib-技术分析-green?style=for-the-badge" alt="TA-Lib">
+  <img src="https://img.shields.io/badge/Telegram_Bot-机器人-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Bot">
+  <img src="https://img.shields.io/badge/AsyncIO-异步-red?style=for-the-badge&logo=python&logoColor=white" alt="AsyncIO">
+</p>
+
+<p>
   <a href="https://t.me/tradecat_ai_channel"><img src="https://img.shields.io/badge/Telegram-频道-blue?style=for-the-badge&logo=telegram" alt="Telegram"></a>
   <a href="https://t.me/glue_coding"><img src="https://img.shields.io/badge/Telegram-交流群-blue?style=for-the-badge&logo=telegram" alt="交流群"></a>
   <a href="https://x.com/123olp"><img src="https://img.shields.io/badge/Twitter-@123olp-black?style=for-the-badge&logo=x" alt="Twitter"></a>
